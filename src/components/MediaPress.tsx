@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import arrowImg from '../assets/herosection/arrow.png';
 import paper2Img from '../assets/paper2.png';
 import { ChevronLeft, ChevronRight, RefreshCw, AlertCircle } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface Article {
   id: string;
@@ -28,6 +29,7 @@ const MediaPress: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [itemsPerPage, setItemsPerPage] = useState<number>(3);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +53,7 @@ const MediaPress: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const apiKey = import.meta.env.VITE_GUARDIAN_API_KEY || '-';
+      const apiKey = import.meta.env.VITE_GUARDIAN_API_KEY || 'test';
       const endpoint = `https://content.guardianapis.com/search?q=law%20OR%20legal%20OR%20justice%20OR%20court&show-fields=thumbnail,trailText&page-size=12&api-key=${apiKey}`;
 
       const res = await fetch(endpoint);
@@ -78,13 +80,24 @@ const MediaPress: React.FC = () => {
 
   const maxIndex = Math.max(0, articles.length - itemsPerPage);
 
-  const prevSlide = () => {
-    setCurrentIndex((prev) => Math.max(0, prev - 1));
-  };
+  const prevSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : maxIndex));
+  }, [maxIndex]);
 
-  const nextSlide = () => {
-    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
-  };
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev < maxIndex ? prev + 1 : 0));
+  }, [maxIndex]);
+
+  // Auto-play carousel timer with pause on hover
+  useEffect(() => {
+    if (loading || error || isHovered || articles.length <= itemsPerPage) return;
+
+    const timer = setInterval(() => {
+      nextSlide();
+    }, 4500);
+
+    return () => clearInterval(timer);
+  }, [loading, error, isHovered, articles.length, itemsPerPage, nextSlide]);
 
   // Format date helper: DD MMM YYYY (e.g. 24 May 2025)
   const formatDate = (dateStr: string) => {
@@ -110,35 +123,50 @@ const MediaPress: React.FC = () => {
   };
 
   return (
-    <section className="relative w-full bg-[#EBECEE] py-12 sm:py-16 md:py-20 px-4 sm:px-8 md:px-12 lg:px-20 overflow-hidden">
+    <motion.section
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ duration: 0.7, ease: 'easeOut' }}
+      className="relative w-full bg-[#EBECEE] py-12 sm:py-16 md:py-20 px-4 sm:px-8 md:px-12 lg:px-20 overflow-hidden"
+      aria-labelledby="media-press-title"
+    >
       {/* Background paper texture top right */}
       <img
         src={paper2Img}
-        alt="Paper texture background"
+        alt=""
+        aria-hidden="true"
         className="absolute top-0 right-0 w-2/3 sm:w-1/2 md:w-5/12 max-w-[550px] h-full pointer-events-none opacity-30 object-contain object-right-top z-0"
       />
 
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-10 sm:mb-14">
-          <span className="text-[#8B1A1A] font-semibold text-xs sm:text-sm tracking-widest uppercase border-b-2 border-[#8B1A1A] pb-0.5 inline-block">
+          <span
+            id="media-press-title"
+            className="text-[#8B1A1A] font-semibold text-xs sm:text-sm tracking-widest uppercase border-b-2 border-[#8B1A1A] pb-0.5 inline-block"
+          >
             MEDIA & PRESS
           </span>
         </div>
 
         {/* Carousel Content */}
         {loading ? (
-          /* Loading Skeletons */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {[1, 2, 3].map((idx) => (
-              <div key={idx} className="animate-pulse bg-white/40 p-4 rounded-sm flex flex-col space-y-4">
-                <div className="bg-gray-300/70 h-48 sm:h-56 w-full rounded-sm"></div>
-                <div className="h-6 bg-gray-300/70 rounded w-3/4"></div>
+          /* Skeleton Loading Cards */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8" role="status" aria-label="Loading media articles">
+            {Array.from({ length: itemsPerPage }).map((_, idx) => (
+              <div key={idx} className="animate-pulse bg-white/50 p-4 rounded-sm flex flex-col space-y-4">
+                <div className="bg-gray-300/80 h-48 sm:h-56 md:h-60 lg:h-64 w-full rounded-sm"></div>
+                <div className="h-6 bg-gray-300/80 rounded w-4/5"></div>
                 <div className="h-4 bg-gray-300/70 rounded w-1/2"></div>
-                <div className="h-10 bg-gray-300/60 rounded w-full"></div>
+                <div className="space-y-2">
+                  <div className="h-3.5 bg-gray-300/60 rounded w-full"></div>
+                  <div className="h-3.5 bg-gray-300/60 rounded w-5/6"></div>
+                </div>
                 <div className="h-4 bg-gray-300/70 rounded w-1/3 mt-2"></div>
               </div>
             ))}
+            <span className="sr-only">Loading latest legal media and press articles...</span>
           </div>
         ) : error ? (
           /* Error State */
@@ -148,7 +176,8 @@ const MediaPress: React.FC = () => {
             <p className="text-sm text-gray-600 mb-5 font-sans">{error}</p>
             <button
               onClick={fetchArticles}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#8B1A1A] text-white text-xs font-semibold tracking-wider uppercase hover:bg-[#6e1414] transition-colors rounded-sm"
+              aria-label="Retry loading news articles"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#8B1A1A] text-white text-xs font-semibold tracking-wider uppercase hover:bg-[#6e1414] transition-colors rounded-sm focus:outline-none focus:ring-2 focus:ring-[#8B1A1A] focus:ring-offset-2"
             >
               <RefreshCw className="w-4 h-4" />
               <span>Try Again</span>
@@ -156,7 +185,14 @@ const MediaPress: React.FC = () => {
           </div>
         ) : (
           /* Articles Carousel Slider */
-          <div className="relative">
+          <div
+            className="relative"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            role="region"
+            aria-roledescription="carousel"
+            aria-label="Legal Media & Press Articles Carousel"
+          >
             {/* Carousel Container */}
             <div className="overflow-hidden" ref={carouselRef}>
               <div
@@ -177,6 +213,9 @@ const MediaPress: React.FC = () => {
                     <div
                       key={article.id || index}
                       className="w-full sm:w-1/2 lg:w-1/3 flex-shrink-0 px-2 sm:px-3 md:px-4 flex"
+                      role="group"
+                      aria-roledescription="slide"
+                      aria-label={`${index + 1} of ${articles.length}: ${article.webTitle}`}
                     >
                       <div className="flex flex-col h-full w-full group">
                         {/* Thumbnail */}
@@ -210,12 +249,14 @@ const MediaPress: React.FC = () => {
                             href={article.webUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-[#9E8043] font-semibold text-xs sm:text-sm tracking-widest uppercase hover:underline group/link focus:outline-none"
+                            aria-label={`Read more details about article: ${article.webTitle}`}
+                            className="inline-flex items-center gap-2 text-[#9E8043] font-semibold text-xs sm:text-sm tracking-widest uppercase hover:underline group/link focus:outline-none focus:ring-1 focus:ring-[#9E8043]"
                           >
                             <span>MORE DETAIL</span>
                             <img
                               src={arrowImg}
-                              alt="Arrow"
+                              alt=""
+                              aria-hidden="true"
                               className="h-3 w-auto object-contain transform group-hover/link:translate-x-1 transition-transform filter brightness-0 sepia-[0.8] hue-rotate-[10deg] saturate-[300%]"
                             />
                           </a>
@@ -229,16 +270,11 @@ const MediaPress: React.FC = () => {
 
             {/* Navigation Controls */}
             {articles.length > itemsPerPage && (
-              <div className="flex items-center justify-center gap-4 mt-12">
+              <div className="flex items-center justify-center gap-4 mt-10 sm:mt-12">
                 <button
                   onClick={prevSlide}
-                  disabled={currentIndex === 0}
-                  aria-label="Previous slide"
-                  className={`p-3 rounded-full border transition-all ${
-                    currentIndex === 0
-                      ? 'border-gray-300 text-gray-400 cursor-not-allowed opacity-50'
-                      : 'border-[#333333] text-[#333333] hover:bg-[#333333] hover:text-white'
-                  }`}
+                  aria-label="Previous article slide"
+                  className="p-3 rounded-full border border-[#333333] text-[#333333] hover:bg-[#333333] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#9E8043]"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -249,13 +285,8 @@ const MediaPress: React.FC = () => {
 
                 <button
                   onClick={nextSlide}
-                  disabled={currentIndex >= maxIndex}
-                  aria-label="Next slide"
-                  className={`p-3 rounded-full border transition-all ${
-                    currentIndex >= maxIndex
-                      ? 'border-gray-300 text-gray-400 cursor-not-allowed opacity-50'
-                      : 'border-[#333333] text-[#333333] hover:bg-[#333333] hover:text-white'
-                  }`}
+                  aria-label="Next article slide"
+                  className="p-3 rounded-full border border-[#333333] text-[#333333] hover:bg-[#333333] hover:text-white transition-all focus:outline-none focus:ring-2 focus:ring-[#9E8043]"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -264,7 +295,7 @@ const MediaPress: React.FC = () => {
           </div>
         )}
       </div>
-    </section>
+    </motion.section>
   );
 };
 

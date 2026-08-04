@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import paper2Img from '../assets/paper2.png';
 import arrowImg from '../assets/herosection/arrow.png';
 
@@ -35,11 +36,19 @@ const LegalSupport: React.FC = () => {
   const [activeId, setActiveId] = useState<number | null>(null);
 
   return (
-    <section className="relative w-full bg-[#FAF9F7] py-16 sm:py-20 md:py-24 px-6 sm:px-12 md:px-20 lg:px-28 overflow-hidden">
+    <motion.section
+      initial={{ opacity: 0, y: 35 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ duration: 0.7, ease: 'easeOut' }}
+      className="relative w-full bg-[#FAF9F7] py-16 sm:py-20 md:py-24 px-6 sm:px-12 md:px-20 lg:px-28 overflow-hidden"
+      aria-labelledby="legal-support-heading"
+    >
       {/* Background paper texture overlay on the left */}
       <img
         src={paper2Img}
-        alt="Paper texture background"
+        alt=""
+        aria-hidden="true"
         className="absolute top-0 left-0 w-2/3 sm:w-1/2 md:w-5/12 max-w-[550px] h-full pointer-events-none opacity-40 object-contain object-left-top z-0 -scale-x-100"
       />
 
@@ -52,7 +61,10 @@ const LegalSupport: React.FC = () => {
             </span>
           </div>
           <div>
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#222222] uppercase tracking-wide font-oswald">
+            <h3
+              id="legal-support-heading"
+              className="text-2xl sm:text-3xl md:text-4xl font-normal text-[#222222] uppercase tracking-wide font-oswald"
+            >
               GUIDING YOU THROUGH EVERY STEPS
             </h3>
           </div>
@@ -62,6 +74,8 @@ const LegalSupport: React.FC = () => {
         <div
           className="max-w-4xl mx-auto space-y-4 sm:space-y-5 my-10"
           onMouseLeave={() => setActiveId(null)}
+          role="list"
+          aria-label="Legal Support Schemes"
         >
           {schemes.map((scheme) => {
             const isActive = scheme.id === activeId;
@@ -69,7 +83,11 @@ const LegalSupport: React.FC = () => {
               <div
                 key={scheme.id}
                 onMouseEnter={() => setActiveId(scheme.id)}
-                className="flex items-center gap-4 sm:gap-6 group cursor-pointer"
+                onClick={() => setActiveId(scheme.id)}
+                role="listitem"
+                tabIndex={0}
+                aria-label={`${scheme.type} Scheme: ${scheme.title}`}
+                className="flex items-center gap-4 sm:gap-6 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#9E8043]"
               >
                 {/* Type Tag (Lawyer / Public) */}
                 <div
@@ -95,7 +113,8 @@ const LegalSupport: React.FC = () => {
                       <span className="text-xs font-mono tracking-widest text-white/80"></span>
                       <img
                         src={arrowImg}
-                        alt="Arrow"
+                        alt=""
+                        aria-hidden="true"
                         className="h-3.5 w-auto object-contain transform group-hover:translate-x-1 transition-transform filter brightness-0 invert"
                       />
                     </div>
@@ -108,18 +127,22 @@ const LegalSupport: React.FC = () => {
 
         {/* Explore More Button */}
         <div className="text-center mt-12 sm:mt-16">
-          <button className="inline-flex items-center gap-2.5 text-[#9E8043] font-semibold text-xs sm:text-sm tracking-widest uppercase hover:underline transition-all group focus:outline-none">
+          <button
+            aria-label="Explore more legal support schemes"
+            className="inline-flex items-center gap-2.5 text-[#9E8043] font-semibold text-xs sm:text-sm tracking-widest uppercase hover:underline transition-all group focus:outline-none focus:ring-1 focus:ring-[#9E8043]"
+          >
             <span>EXPLORE MORE SUPPORT</span>
             <span className="text-xs font-mono tracking-widest text-[#9E8043]"></span>
             <img
               src={arrowImg}
-              alt="Arrow"
+              alt=""
+              aria-hidden="true"
               className="h-3 w-auto object-contain transform group-hover:translate-x-1 transition-transform filter brightness-0 sepia-[0.8] hue-rotate-[10deg] saturate-[300%]"
             />
           </button>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 
