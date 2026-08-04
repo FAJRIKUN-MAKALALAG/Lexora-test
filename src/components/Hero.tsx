@@ -9,7 +9,7 @@ import instaImg from "../assets/herosection/insta.png";
 import linkedinImg from "../assets/herosection/LinkedIn.png";
 import hamburgerImg from "../assets/herosection/hamburgericon.png";
 import arrowImg from "../assets/herosection/arrow.png";
-
+import NavigationMenu from "./NavigationMenu";
 
 const Hero = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -137,6 +137,10 @@ const Hero = () => {
           </div>
         </div>
       </div>
+      {/* Sidebar Menu Component */}
+      {isMenuOpen && (
+        <NavigationMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      )}
     </section>
   );
 };
