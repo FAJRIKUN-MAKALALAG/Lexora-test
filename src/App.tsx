@@ -2,6 +2,7 @@ import Hero from "./components/Hero"
 import WhatWeDo from "./components/WhatWeDo"
 import Anniversary from "./components/Anniversary"   
 import LegalSupport from "./components/LegalSupport"
+import MediaPress from "./components/MediaPress"
 
 
 
@@ -13,6 +14,7 @@ function App() {
       <WhatWeDo />
       <Anniversary />    
       <LegalSupport />  
+      <MediaPress />    
     </div>
 
   )
