@@ -3,6 +3,7 @@ import WhatWeDo from "./components/WhatWeDo"
 import Anniversary from "./components/Anniversary"   
 import LegalSupport from "./components/LegalSupport"
 import MediaPress from "./components/MediaPress"
+import Footer from "./components/Footer"
 
 
 
@@ -15,6 +16,7 @@ function App() {
       <Anniversary />    
       <LegalSupport />  
       <MediaPress />    
+      <Footer />
     </div>
 
   )
