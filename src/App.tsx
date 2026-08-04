@@ -1,6 +1,10 @@
 import Hero from "./components/Hero"
 import WhatWeDo from "./components/WhatWeDo"
-import Anniversary from "./components/Anniversary"      
+import Anniversary from "./components/Anniversary"   
+import LegalSupport from "./components/LegalSupport"
+
+
+
 
 function App() {
   return (
@@ -8,6 +12,7 @@ function App() {
       <Hero />
       <WhatWeDo />
       <Anniversary />    
+      <LegalSupport />  
     </div>
 
   )
