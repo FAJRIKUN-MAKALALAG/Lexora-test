@@ -63,3 +63,4 @@ A modern, highly responsive legal and law firm portal application built with Rea
 1. **The Guardian Test Key Rate Limits**: The default `'-'` key is rate-limited by The Guardian API (approx. 12 calls/minute). If the rate limit is exceeded, an error state UI with a "Try Again" retry button will appear.
 2. **Ad-Blocker Interference**: Some strict ad-blockers may flag requests to external media APIs. If news fails to load, disable ad-blockers for local testing or use the retry button.
 3. **Smooth Slide Drawer**: On smaller viewports (<1130px), the navigation menu dynamically scales to 100% viewport width to ensure optimal readability on mobile and tablet devices.
+4. Also, the hero section doesn't quite match the mockup on mobile.
