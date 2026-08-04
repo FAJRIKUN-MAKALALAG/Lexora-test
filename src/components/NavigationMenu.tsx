@@ -89,7 +89,12 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ isOpen, onClose }) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex justify-end items-center overflow-hidden">
+        <div
+          className="fixed inset-0 z-[100] flex justify-end items-center overflow-hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation Menu Overlay"
+        >
           {/* Backdrop Blur & Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -97,10 +102,11 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ isOpen, onClose }) => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             onClick={onClose}
+            aria-hidden="true"
             className="absolute inset-0 bg-black/40 backdrop-blur-md cursor-pointer"
           />
 
-          {/* Navigation Menu Panel (w: 1130px, full height h-full, smooth slide right to left) */}
+          {/* Navigation Menu Panel */}
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
@@ -111,7 +117,8 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ isOpen, onClose }) => {
             {/* Background Vintage Scales Image */}
             <img
               src={vintageImg}
-              alt="Scales of Justice"
+              alt=""
+              aria-hidden="true"
               className="absolute right-0 bottom-0 h-full max-h-[85vh] w-auto object-contain object-right-bottom opacity-30 md:opacity-40 pointer-events-none z-0"
             />
 
@@ -120,43 +127,51 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ isOpen, onClose }) => {
               
               {/* Top Header Actions (Socials + Contact + Close Button) */}
               <div className="flex justify-between items-center w-full mb-8 sm:mb-12">
-                {/* Empty left side spacer to balance header */}
                 <div></div>
 
                 {/* Right Header Actions */}
                 <div className="flex items-center space-x-4 sm:space-x-6 md:space-x-8">
                   <div className="flex items-center space-x-3 sm:space-x-4">
-                    <img
-                      src={fbImg}
-                      alt="Facebook"
-                      className="h-3.5 sm:h-4 w-auto cursor-pointer hover:opacity-80 transition-opacity filter brightness-0 invert"
-                    />
-                    <img
-                      src={instaImg}
-                      alt="Instagram"
-                      className="h-3.5 sm:h-4 w-auto cursor-pointer hover:opacity-80 transition-opacity filter brightness-0 invert"
-                    />
-                    <img
-                      src={linkedinImg}
-                      alt="LinkedIn"
-                      className="h-3.5 sm:h-4 w-auto cursor-pointer hover:opacity-80 transition-opacity filter brightness-0 invert"
-                    />
+                    <a href="#" aria-label="Facebook Page">
+                      <img
+                        src={fbImg}
+                        alt=""
+                        aria-hidden="true"
+                        className="h-3.5 sm:h-4 w-auto cursor-pointer hover:opacity-80 transition-opacity filter brightness-0 invert"
+                      />
+                    </a>
+                    <a href="#" aria-label="Instagram Page">
+                      <img
+                        src={instaImg}
+                        alt=""
+                        aria-hidden="true"
+                        className="h-3.5 sm:h-4 w-auto cursor-pointer hover:opacity-80 transition-opacity filter brightness-0 invert"
+                      />
+                    </a>
+                    <a href="#" aria-label="LinkedIn Profile">
+                      <img
+                        src={linkedinImg}
+                        alt=""
+                        aria-hidden="true"
+                        className="h-3.5 sm:h-4 w-auto cursor-pointer hover:opacity-80 transition-opacity filter brightness-0 invert"
+                      />
+                    </a>
                   </div>
                   
-                  <div className="h-4 w-[1px] bg-white/40"></div>
+                  <div className="h-4 w-[1px] bg-white/40" aria-hidden="true"></div>
 
                   <a
                     href="#contact"
                     onClick={onClose}
-                    className="text-xs sm:text-sm font-montserrat font-semibold tracking-wider text-white hover:text-[#B89659] uppercase transition-colors"
+                    className="text-xs sm:text-sm font-montserrat font-semibold tracking-wider text-white hover:text-[#B89659] uppercase transition-colors focus:outline-none"
                   >
                     CONTACT US
                   </a>
 
                   <button
                     onClick={onClose}
-                    className="ml-2 sm:ml-4 text-white/80 hover:text-white transition-colors focus:outline-none p-1"
-                    aria-label="Close menu"
+                    className="ml-2 sm:ml-4 text-white/80 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-[#C5A059] p-1 rounded"
+                    aria-label="Close navigation menu"
                   >
                     <X className="w-7 h-7 sm:w-8 sm:h-8" />
                   </button>
@@ -166,29 +181,33 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ isOpen, onClose }) => {
               {/* Search Input Bar */}
               <div className="w-full max-w-3xl mb-8 sm:mb-12">
                 <div className="relative w-full border-b border-white/30 pb-2.5 flex items-center gap-3 group focus-within:border-white transition-colors">
-                  <Search className="w-5 h-5 text-white/60 group-focus-within:text-white transition-colors" />
+                  <Search className="w-5 h-5 text-white/60 group-focus-within:text-white transition-colors" aria-hidden="true" />
                   <input
-                    type="text"
+                    type="search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search here"
+                    aria-label="Search website content"
                     className="w-full bg-transparent text-white placeholder-white/50 text-[16px] font-montserrat font-normal outline-none"
                   />
                 </div>
               </div>
 
-              {/* Menu Grid (Left Column: Main Categories, Right Column: Subcategories) */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 w-full max-w-5xl my-auto">
+              {/* Menu Grid */}
+              <nav className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 w-full max-w-5xl my-auto" aria-label="Main Navigation">
                 
                 {/* Main Menu Titles */}
-                <div className="md:col-span-5 flex flex-col items-start space-y-3 sm:space-y-4">
+                <div className="md:col-span-5 flex flex-col items-start space-y-3 sm:space-y-4" role="tablist" aria-label="Navigation Categories">
                   {mainMenuItems.map((item) => {
                     const isActive = activeTab === item.id;
                     return (
                       <button
                         key={item.id}
+                        role="tab"
+                        aria-selected={isActive}
+                        aria-controls={`submenu-${item.id}`}
                         onClick={() => setActiveTab(item.id)}
-                        className={`text-left font-oswald text-[30px] font-normal tracking-wide uppercase transition-all duration-200 focus:outline-none ${
+                        className={`text-left font-oswald text-[30px] font-normal tracking-wide uppercase transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-[#C5A059] ${
                           isActive
                             ? 'text-[#C5A059] border-b-2 border-[#C5A059] pb-0.5'
                             : 'text-white hover:text-[#C5A059]'
@@ -201,14 +220,14 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Submenu Links */}
-                <div className="md:col-span-7 pt-2 md:pt-1">
+                <div className="md:col-span-7 pt-2 md:pt-1" id={`submenu-${activeTab}`} role="tabpanel">
                   <ul className="space-y-3 sm:space-y-4 font-montserrat text-[16px] font-normal text-white/90">
                     {(subMenuItems[activeTab] || []).map((subItem, index) => (
                       <li key={index}>
                         <a
                           href={`#${subItem.toLowerCase().replace(/\s+/g, '-')}`}
                           onClick={onClose}
-                          className="hover:text-[#C5A059] transition-colors inline-block text-white/80 hover:translate-x-1 transform duration-150"
+                          className="hover:text-[#C5A059] transition-colors inline-block text-white/80 hover:translate-x-1 transform duration-150 focus:outline-none focus:underline"
                         >
                           {subItem}
                         </a>
@@ -217,7 +236,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ isOpen, onClose }) => {
                   </ul>
                 </div>
 
-              </div>
+              </nav>
 
             </div>
           </motion.div>

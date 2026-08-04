@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import anniversaryBg from '../assets/aniversarybg.png';
 import redLog from '../assets/redlog.png';
 import paperImg from '../assets/herosection/paper.png';
 import paper2Img from '../assets/paper2.png';
 import rectangle6Img from '../assets/Rectangle6.png';
 
-const Anniversary = () => {
+const Anniversary: React.FC = () => {
   const [activeYear, setActiveYear] = useState<'2025' | '2026' | '2027'>('2025');
 
   const yearData = {
@@ -27,7 +28,14 @@ const Anniversary = () => {
   };
 
   return (
-    <section className="relative w-full bg-[#FAFAFA] overflow-hidden">
+    <motion.section
+      initial={{ opacity: 0, y: 35 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ duration: 0.7, ease: 'easeOut' }}
+      className="relative w-full bg-[#FAFAFA] overflow-hidden"
+      aria-labelledby="anniversary-heading"
+    >
       {/* 1. Top Hero/Video Banner with aniversarybg.png (1440x692 ratio) */}
       <div className="relative w-full aspect-[1440/692] min-h-[420px] sm:min-h-[500px] md:min-h-[580px] lg:min-h-[692px] px-4 sm:px-8 bg-black/60 overflow-hidden flex flex-col items-center justify-center">
         {/* Background photo */}
@@ -41,7 +49,8 @@ const Anniversary = () => {
           {/* Red banner background (redlog.png) */}
           <img
             src={redLog}
-            alt="Red Banner background"
+            alt=""
+            aria-hidden="true"
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92%] sm:w-[85%] md:w-[78%] h-auto max-h-[70px] sm:max-h-[90px] object-fill pointer-events-none shadow-md"
           />
 
@@ -53,7 +62,7 @@ const Anniversary = () => {
             </span>
 
             {/* 60 Number */}
-            <span className="font-oswald text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-white leading-none px-1 drop-shadow-md">
+            <span className="font-oswald text-5xl sm:text-7xl md:text-8xl lg:9xl font-bold text-white leading-none px-1 drop-shadow-md">
               60
             </span>
 
@@ -70,7 +79,10 @@ const Anniversary = () => {
         </div>
 
         {/* Play Video Button */}
-        <div className="relative z-10 mt-8 sm:mt-12 flex flex-col items-center cursor-pointer group">
+        <button
+          aria-label="Play 60th Anniversary Video"
+          className="relative z-10 mt-8 sm:mt-12 flex flex-col items-center cursor-pointer group focus:outline-none focus:ring-2 focus:ring-[#8B735B] focus:ring-offset-2 rounded-full p-2"
+        >
           <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-[#8B735B] group-hover:bg-[#76614b] flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110">
             {/* Play triangle icon */}
             <div className="w-0 h-0 border-y-[6px] sm:border-y-[8px] border-y-transparent border-l-[10px] sm:border-l-[14px] border-l-white ml-1" />
@@ -78,13 +90,14 @@ const Anniversary = () => {
           <span className="text-white text-[10px] sm:text-xs font-montserrat font-bold tracking-[0.2em] uppercase mt-2.5 opacity-90 group-hover:opacity-100 transition-opacity">
             PLAY VIDEO
           </span>
-        </div>
+        </button>
 
         {/* Torn Paper Edge at the bottom of top banner */}
         <div className="absolute bottom-0 -left-[2%] -right-[2%] w-[104%] z-20 pointer-events-none overflow-hidden">
           <img
             src={paperImg}
-            alt="Torn Paper Edge"
+            alt=""
+            aria-hidden="true"
             className="w-full max-w-none h-auto block translate-y-[37.5%] scale-x-105"
           />
         </div>
@@ -95,7 +108,8 @@ const Anniversary = () => {
         {/* Paper2 background texture positioned top right right after paper.png */}
         <img
           src={paper2Img}
-          alt="Paper texture background"
+          alt=""
+          aria-hidden="true"
           className="absolute top-0 right-0 w-2/3 sm:w-1/2 md:w-5/12 max-w-[550px] h-auto pointer-events-none opacity-80 object-contain object-right-top z-0"
         />
 
@@ -109,7 +123,10 @@ const Anniversary = () => {
           </div>
 
           {/* Headline */}
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-[#222222] uppercase tracking-wide font-oswald leading-[1.12]">
+          <h2
+            id="anniversary-heading"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-[#222222] uppercase tracking-wide font-oswald leading-[1.12]"
+          >
             CELEBRATING A LEGACY, <br />
             JOURNEYING TO THE FUTURE
           </h2>
@@ -132,13 +149,20 @@ const Anniversary = () => {
           {/* Right Column: Timeline details */}
           <div className="lg:col-span-6 flex flex-col justify-between py-1">
             {/* Year Selector Tabs - Upper Right */}
-            <div className="flex items-center justify-end space-x-3 text-3xl sm:text-4xl md:text-5xl font-oswald font-bold tracking-tight mb-8 select-none">
+            <div
+              className="flex items-center justify-end space-x-3 text-3xl sm:text-4xl md:text-5xl font-oswald font-bold tracking-tight mb-8 select-none"
+              role="tablist"
+              aria-label="Anniversary Roadmap Years"
+            >
               {(['2025', '2026', '2027'] as const).map((year, idx) => (
                 <React.Fragment key={year}>
-                  {idx > 0 && <span className="text-gray-300 font-light text-2xl sm:text-3xl">·</span>}
+                  {idx > 0 && <span className="text-gray-300 font-light text-2xl sm:text-3xl" aria-hidden="true">·</span>}
                   <button
+                    role="tab"
+                    aria-selected={activeYear === year}
+                    aria-label={`View milestone details for year ${year}`}
                     onClick={() => setActiveYear(year)}
-                    className={`transition-colors duration-200 focus:outline-none ${
+                    className={`transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-[#9E8043] ${
                       activeYear === year
                         ? 'text-[#9E8043]'
                         : 'text-gray-300 hover:text-gray-500'
@@ -151,7 +175,7 @@ const Anniversary = () => {
             </div>
 
             {/* Active Year Content */}
-            <div className="mt-auto">
+            <div className="mt-auto" role="tabpanel" aria-label={`Details for ${activeYear}`}>
               <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-4 font-sans leading-snug">
                 {yearData[activeYear].title}
               </h3>
@@ -162,7 +186,7 @@ const Anniversary = () => {
           </div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 
